@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+19b0330a1dc0c5ec563930ebad38df6c src/proto/chat.pb.h

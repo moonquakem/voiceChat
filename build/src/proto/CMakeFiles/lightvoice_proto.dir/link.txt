@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblightvoice_proto.a CMakeFiles/lightvoice_proto.dir/chat.pb.cc.o
+/usr/bin/ranlib liblightvoice_proto.a

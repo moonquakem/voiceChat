@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -O3 -march=native -flto -pthread CMakeFiles/mixer_benchmark.dir/mixer_benchmark.cpp.o -o mixer_benchmark  -Wl,-rpath,/usr/local/lib ../src/proto/liblightvoice_proto.a /usr/lib/x86_64-linux-gnu/libprotobuf.so /usr/lib/x86_64-linux-gnu/libspdlog.so /usr/lib/x86_64-linux-gnu/libfmt.so /usr/local/lib/libfmt.a /usr/local/lib/libopus.so 
