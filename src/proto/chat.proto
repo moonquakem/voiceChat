@@ -1,0 +1,127 @@
+// ====================================================================
+// LightVoice: Protocol Definitions
+// src/proto/chat.proto
+//
+// Defines all Protobuf messages for signaling and text chat.
+// Author: Gemini
+// ====================================================================
+
+syntax = "proto3";
+
+package lightvoice.proto;
+
+// Wrapper message to allow sending one of many message types.
+// The actual message type will be determined at runtime.
+message Packet {
+    oneof payload {
+        LoginRequest    login_request = 1;
+        LoginResponse   login_response = 2;
+        CreateRoomRequest create_room_request = 3;
+        CreateRoomResponse create_room_response = 4;
+        JoinRoomRequest join_room_request = 5;
+        JoinRoomResponse join_room_response = 6;
+        LeaveRoomRequest leave_room_request = 7;
+        LeaveRoomResponse leave_room_response = 8;
+        ListRoomsRequest list_rooms_request = 9;
+        ListRoomsResponse list_rooms_response = 10;
+        RoomNotification room_notification = 11;
+        SendTextRequest send_text_request = 12;
+        TextNotification text_notification = 13;
+    }
+}
+
+
+// --- User Authentication ---
+
+// C -> S: Client sends its desired username upon connection.
+message LoginRequest {
+    string username = 1;
+}
+
+// S -> C: Server responds with the result of the login attempt.
+message LoginResponse {
+    bool success = 1;
+    string message = 2;
+    uint32 user_id = 3; // Unique user ID assigned by the server.
+}
+
+
+// --- Room Management ---
+
+message RoomInfo {
+    uint32 room_id = 1;
+    string room_name = 2;
+    uint32 member_count = 3;
+    uint32 max_members = 4;
+}
+
+// C -> S: Request to create a new room.
+message CreateRoomRequest {
+    string room_name = 1;
+}
+
+// S -> C: Response to a room creation request.
+message CreateRoomResponse {
+    bool success = 1;
+    string message = 2;
+    RoomInfo room_info = 3;
+}
+
+// C -> S: Request to join an existing room.
+message JoinRoomRequest {
+    uint32 room_id = 1;
+}
+
+// S -> C: Response to a room join request.
+message JoinRoomResponse {
+    bool success = 1;
+    string message = 2;
+    RoomInfo room_info = 3;
+}
+
+// C -> S: Request to leave the current room.
+message LeaveRoomRequest {
+    // No fields needed, server knows user and room from connection context.
+}
+
+// S -> C: Confirmation of leaving a room.
+message LeaveRoomResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// C -> S: Request the list of all available rooms.
+message ListRoomsRequest {}
+
+// S -> C: The list of all available rooms.
+message ListRoomsResponse {
+    repeated RoomInfo rooms = 1;
+}
+
+// S -> C: Notification sent to all members of a room when someone joins or leaves.
+message RoomNotification {
+    enum Type {
+        JOIN = 0;
+        LEAVE = 1;
+    }
+    Type type = 1;
+    uint32 user_id = 2;
+    string username = 3;
+    string message = 4; // e.g., "Alice has joined the room."
+}
+
+
+// --- Text Chat ---
+
+// C -> S: Client sends a text message to its current room.
+message SendTextRequest {
+    string text = 1;
+}
+
+// S -> C: Notification broadcast to all room members with a text message.
+message TextNotification {
+    uint32 sender_id = 1;
+    string sender_username = 2;
+    string text = 3;
+    uint64 timestamp = 4; // UTC milliseconds
+}
