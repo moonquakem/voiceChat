@@ -10,6 +10,10 @@
 
 #pragma once
 
+// Define this to use the compiled spdlog library, not the header-only version.
+// This must come before any spdlog includes.
+#define SPDLOG_COMPILED_LIB
+
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "fmt/core.h"

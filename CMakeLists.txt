@@ -41,13 +41,15 @@ find_package(PkgConfig REQUIRED)
 # 1. Threads (required by C++ standard library)
 find_package(Threads REQUIRED)
 
-# Conditionally find dependencies based on the build environment
+# 2. Protobuf (for signaling)
+# Must be found before subdirectories to make protobuf_generate_cpp available.
+find_package(Protobuf 3.20 REQUIRED)
+
+# Conditionally find other dependencies based on the build environment
 if(NOT MSVC)
     # On non-Windows systems, use pkg-config to find system libraries.
     # This is generally more reliable with package managers like apt.
     message(STATUS "Using pkg-config for dependency detection on non-MSVC platform.")
-
-    pkg_check_modules(Protobuf REQUIRED protobuf)
 
     pkg_check_modules(spdlog REQUIRED IMPORTED_TARGET spdlog)
     set(SPDLOG_TARGET PkgConfig::spdlog)
@@ -63,8 +65,6 @@ if(NOT MSVC)
 else()
     # On Windows, find_package works well with package managers like vcpkg.
     message(STATUS "Using find_package for dependency detection on MSVC platform.")
-
-    find_package(Protobuf 3.20 REQUIRED)
 
     find_package(spdlog 1.12 REQUIRED)
     set(SPDLOG_TARGET spdlog::spdlog)

@@ -22,7 +22,12 @@ list(APPEND SRC_FILES "main.cc")
 
 # --- Create Executable ---
 add_executable(lightvoice_server ${SRC_FILES})
-add_executable(test_client src/client/test_client.cpp)
+add_executable(test_client client/test_client.cpp)
+
+# Enable symbol exports from the server executable so that other targets (like benchmarks)
+# can link against it to reuse its object files.
+set_target_properties(lightvoice_server PROPERTIES ENABLE_EXPORTS ON)
+
 
 
 # --- Link Libraries ---

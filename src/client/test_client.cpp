@@ -19,28 +19,33 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <netdb.h>
+#include <cerrno>
+#include <cstring>
+
+// Audio settings
+#define SAMPLE_RATE (48000)
+#define NUM_CHANNELS (1)
+#define FRAMES_PER_BUFFER (480) // 10ms at 48kHz
 
 // --- PortAudio Callback ---
-static int paCallback(const void* inputBuffer, void* outputBuffer,
+int paCallback(const void* inputBuffer, void* outputBuffer,
                       unsigned long framesPerBuffer,
                       const PaStreamCallbackTimeInfo* timeInfo,
                       PaStreamCallbackFlags statusFlags,
                       void* userData) {
-    // For now, we are not playing back audio, just capturing.
-    // So we just handle the input. The server will send us mixed audio.
-    
-    // In a real client, you would:
-    // 1. Copy `inputBuffer` to a buffer to be encoded and sent.
-    // 2. Copy received & decoded audio to `outputBuffer` to be played.
-    
-    (void)outputBuffer; // Prevent unused variable warning
-    
+    // Prevent unused variable warnings
+    (void)outputBuffer;
+    (void)framesPerBuffer;
+    (void)timeInfo;
+    (void)statusFlags;
+    (void)userData;
+
     if (inputBuffer == NULL) {
         return paContinue;
     }
 
     // This is where you would take the input data and send it to the server
-    const int16_t* pcm = static_cast<const int16_t*>(inputBuffer);
+    // const int16_t* pcm = static_cast<const int16_t*>(inputBuffer);
     // e.g., encode_and_send(pcm, framesPerBuffer);
 
     return paContinue;
@@ -90,7 +95,7 @@ int main() {
     }
 
     if (connect(sock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
-        LOGGER_CRITICAL("Connection failed");
+        LOGGER_CRITICAL("Connection failed: {}", strerror(errno));
         close(sock);
         return 1;
     }
@@ -140,3 +145,5 @@ int main() {
     shutdown(sock, SHUT_RDWR);
     close(sock);
     network_thread.join();
+    return 0;
+}
