@@ -31,18 +31,18 @@ target_link_libraries(lightvoice_server
     lightvoice_proto      # Our generated protobuf library
     ${Protobuf_LIBRARIES} # Google's protobuf runtime
     ${CMAKE_THREAD_LIBS_INIT} # pthreads
-    spdlog::spdlog        # Logging library
-    fmt::fmt              # Formatting library
-    Opus::opus            # Opus codec
+    ${SPDLOG_TARGET}        # Logging library
+    ${FMT_TARGET}              # Formatting library
+    ${OPUS_TARGET}            # Opus codec
 )
 
 target_link_libraries(test_client
     PRIVATE
     ${CMAKE_THREAD_LIBS_INIT}
-    spdlog::spdlog
-    fmt::fmt
-    Opus::opus
-    PortAudio::portaudio
+    ${SPDLOG_TARGET}
+    ${FMT_TARGET}
+    ${OPUS_TARGET}
+    ${PORTAUDIO_TARGET}
 )
 
 # Set properties for installation (optional)

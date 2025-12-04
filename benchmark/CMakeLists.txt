@@ -15,8 +15,8 @@ add_executable(mixer_benchmark ${MIXER_BENCHMARK_SRC})
 # --- Link Libraries ---
 target_link_libraries(stress_test
     PRIVATE
-    spdlog::spdlog
-    fmt::fmt
+    ${SPDLOG_TARGET}
+    ${FMT_TARGET}
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
@@ -24,9 +24,9 @@ target_link_libraries(mixer_benchmark
     PRIVATE
     lightvoice_proto
     ${Protobuf_LIBRARIES}
-    spdlog::spdlog
-    fmt::fmt
-    Opus::opus
+    ${SPDLOG_TARGET}
+    ${FMT_TARGET}
+    ${OPUS_TARGET}
     ${CMAKE_THREAD_LIBS_INIT}
 )
 

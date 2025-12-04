@@ -36,21 +36,48 @@ endif()
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
 
 # --- Dependencies ---
+find_package(PkgConfig REQUIRED)
+
 # 1. Threads (required by C++ standard library)
 find_package(Threads REQUIRED)
 
-# 2. Protobuf (for signaling)
-find_package(Protobuf 3.20 REQUIRED)
+# Conditionally find dependencies based on the build environment
+if(NOT MSVC)
+    # On non-Windows systems, use pkg-config to find system libraries.
+    # This is generally more reliable with package managers like apt.
+    message(STATUS "Using pkg-config for dependency detection on non-MSVC platform.")
 
-# 3. spdlog and fmt (for logging)
-find_package(spdlog 1.12 REQUIRED) # spdlog often bundles fmt
-find_package(fmt 10 REQUIRED)
+    pkg_check_modules(Protobuf REQUIRED protobuf)
 
-# 4. Opus (for audio codec)
-find_package(Opus 1.3 REQUIRED)
+    pkg_check_modules(spdlog REQUIRED IMPORTED_TARGET spdlog)
+    set(SPDLOG_TARGET PkgConfig::spdlog)
 
-# 5. PortAudio (for client audio I/O)
-find_package(PortAudio REQUIRED)
+    pkg_check_modules(fmt REQUIRED IMPORTED_TARGET fmt)
+    set(FMT_TARGET PkgConfig::fmt)
+
+    pkg_check_modules(Opus REQUIRED IMPORTED_TARGET opus)
+    set(OPUS_TARGET PkgConfig::Opus)
+
+    pkg_check_modules(PortAudio REQUIRED IMPORTED_TARGET portaudio-2.0)
+    set(PORTAUDIO_TARGET PkgConfig::PortAudio)
+else()
+    # On Windows, find_package works well with package managers like vcpkg.
+    message(STATUS "Using find_package for dependency detection on MSVC platform.")
+
+    find_package(Protobuf 3.20 REQUIRED)
+
+    find_package(spdlog 1.12 REQUIRED)
+    set(SPDLOG_TARGET spdlog::spdlog)
+
+    find_package(fmt 10 REQUIRED)
+    set(FMT_TARGET fmt::fmt)
+
+    find_package(Opus 1.3 REQUIRED)
+    set(OPUS_TARGET Opus::opus)
+
+    find_package(PortAudio REQUIRED)
+    set(PORTAUDIO_TARGET PortAudio::portaudio)
+endif()
 
 # --- Project Structure ---
 # Add common library path for includes
